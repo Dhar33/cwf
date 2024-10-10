@@ -1,0 +1,65 @@
+# Load packages ----------------------------------------------------------------
+
+library(shiny)
+library(ggplot2)
+
+# Load the dataset from a URL
+movies <- read.csv(file = "https://raw.githubusercontent.com/Dhar33/cwf/refs/heads/main/SportAnalytik%20SG%20Final.csv", header = TRUE, sep = ",")
+
+
+ui <- fluidPage(
+  titlePanel("Physical Test Results Visualization"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput(
+        inputId = "y",
+        label = "Y-axis:",
+        choices = list(
+          "Bend_forward" = "Bend_forward",
+          "One_leg_standing" = "One_leg_standing",
+          "Basketball_ball_throw" = "Basketball_ball_throw",
+          "Capture_the_flag" = "Capture_the_flag",
+          "Long_jump" = "Long_jump",
+          "Vault_test" = "Vault_test"
+        ),
+        selected = "Bend_forward"
+      ),
+      
+      selectInput(
+        inputId = "x",
+        label = "X-axis:",
+        choices = list(
+          "Height" = "Height",
+          "Age" = "Age",
+          "Is_male" = "Is_male"
+        ),
+        selected = "Height"
+      ),
+      
+      selectInput(
+        inputId = "z",
+        label = "Color by:",
+        choices = list(
+          "Favorite_sport" = "Favorite_sport"
+        ),
+        selected = "Favorite_sport"
+      )
+    ),
+    
+    mainPanel(
+      plotOutput(outputId = "scatterPlot")
+    )
+  )
+)
+
+server <- function(input, output) {
+  output$scatterPlot <- renderPlot({
+    ggplot(movies, aes_string(x = input$x, y = input$y, color = input$z)) +
+      geom_point() +
+      theme_minimal()
+  })
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
